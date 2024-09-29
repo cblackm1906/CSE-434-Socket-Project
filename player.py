@@ -1,7 +1,8 @@
-# CSE 434 Fall 2024
+# CSE 434 
+# Fall 2024
 # Socket Project
 # Group 76
-# Caleb Blackmon and Gurshan Singh
+# Caleb Blackmon and Gursharan Singh
 
 import socket
 import threading
