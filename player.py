@@ -3,6 +3,7 @@
 # Socket Project
 # Group 76
 # Caleb Blackmon and Gursharan Singh
+# Reference video used for Socket Programming in Python https://www.youtube.com/watch?v=3QiPPX-KeSc
 
 import socket
 import threading
