@@ -85,7 +85,24 @@ class Tracker:
             if details['status'] == 'free':
                 self.players[player_name]['status'] = 'in game'
                 self.players[player_name]['game ID'] = game_id
-                
+          
+          # This saves games details for querying later on when a player queries games
+          self.games[game_id] = {
+                'dealer' : dealer,
+                'holes' : holes,
+                'status' : 'in play'
+          }
+
+          # This grabs all players being put into the game (based on specific game ID) and their details, then sends back to player (dealer) that requested
+          response = "Players starting game:\n"
+          for player_name, details in self.players.items():
+            if details['status'] == 'in game' & details['game ID'] == game_id:
+                response += (
+                f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n Game ID: {details['game ID']}\n\n"""
+                )
+            else:
+                  continue
+          return response
 
     # This function gathers the total games active and returns it. There is no game setup implementation so games will always 
     # return 0
