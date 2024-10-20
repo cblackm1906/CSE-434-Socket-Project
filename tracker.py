@@ -53,7 +53,8 @@ class Tracker:
               'address': addr[0], 
               'player port': player_port, 
               'peer port': peer_port, 
-              'status': 'free'}
+              'status': 'free',
+              'game ID' : 'None'}
         # This returns the message that the player was registered and the total players active
         return f"Player {player_name} registered\nTotal Players: {len(self.players)}\n"
 
@@ -66,10 +67,11 @@ class Tracker:
         # duplicate names, invalid players, etc.
         for player_name, details in self.players.items():
             response += (
-                f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n\n"""
+                f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n Game ID: {details['game ID']}\n\n"""
             )
         return response
 
+    # Start game request handler that starts a game with all free players
     def start_game(self, request):
           dealer = request[1]
           holes = request[2]
@@ -78,11 +80,11 @@ class Tracker:
           game_id = self.game_id
           self.game_id = self.game_id + 1
           
-          # Grabs all free players
+          # Grabs all free players and sets their status to in a game and saves their game ID
           for player_name, details in self.players.items():
             if details['status'] == 'free':
                 self.players[player_name]['status'] = 'in game'
-                self.players[player_name]['game_id'] = game_id
+                self.players[player_name]['game ID'] = game_id
                 
 
     # This function gathers the total games active and returns it. There is no game setup implementation so games will always 
