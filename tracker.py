@@ -7,6 +7,7 @@
 
 import socket
 import threading
+import random
 
 # This prompts the user to save the IP address of the tracker
 SERVER = input("IP Address: ")
@@ -22,6 +23,9 @@ class Tracker:
     def __init__(self):
         self.players = {}
         self.games = {}
+
+        # This creates a way to manage multiple games at once by assigning an ID
+        self.game_id = 0
 
     # The start function allows the tracker to recieve messages from players. It binds the address and port entered at the 
     # beginning of the program.
@@ -49,7 +53,8 @@ class Tracker:
               'address': addr[0], 
               'player port': player_port, 
               'peer port': peer_port, 
-              'status': 'free'}
+              'status': 'free',
+              'game ID' : None}
         # This returns the message that the player was registered and the total players active
         return f"Player {player_name} registered\nTotal Players: {len(self.players)}\n"
 
@@ -62,14 +67,75 @@ class Tracker:
         # duplicate names, invalid players, etc.
         for player_name, details in self.players.items():
             response += (
-                f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n\n"""
+                f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n Game ID: {details['game ID']}\n\n"""
             )
         return response
 
-    # This function gathers the total games active and returns it. There is no game setup implementation so games will always 
-    # return 0
+    # Start game request handler that starts a game with all free players
+    def start_game(self, request):
+          dealer = request[1]
+          holes = request[2]
+          
+          # This sets the game ID for the game being started then increments it by 1 for the next game created to have a different ID
+          game_id = self.game_id
+          self.game_id = self.game_id + 1
+          
+          # Grabs all free players and sets their status to in a game and saves their game ID
+          for player_name, details in self.players.items():
+            if details['status'] == 'free':
+                self.players[player_name]['status'] = 'in game'
+                self.players[player_name]['game ID'] = game_id
+          
+          # This saves games details for querying later on when a player queries games
+          self.games[game_id] = {
+                'dealer' : dealer,
+                'holes' : holes,
+                'status' : 'in play'
+          }
+
+          # This grabs all players being put into the game (based on specific game ID) and their details, then sends back to player (dealer) that requested
+          response = "Players starting game:\n"
+          for player_name, details in self.players.items():
+            if details['status'] == 'in game' & details['game ID'] == game_id:
+                response += (
+                f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n Game ID: {details['game ID']}\n\n"""
+                )
+            else:
+                  continue
+          return response
+    
+    # This function ends a game based a request for a specific game ID to be ended
+    def end_game(self, request):
+          game_id = request[1]
+          
+          # For each player with the game ID that is being deleted, their status is set to free and their game ID is set to none again
+          for player_name, details in self.players.items():
+                if details['game ID'] == game_id:
+                    self.players[player_name]['status'] = 'free'
+                    self.players[player_name]['game ID'] = None
+                else:
+                      continue
+
+          # Deletes the game ID that is requested and sends the confirmation back to the player
+          del self.games[game_id]
+          return f"Game {game_id} has ended\n"
+
+    # This function has been updated from the milestone to incorporate correct query game features
+    # If there are no current games running then it returns no games are running, otherwise it prints out each game's details
     def query_games(self):
-        response = f"Running Games: {len(self.games)}\n"
+        response = "Running Games:\n"
+        if len(self.games) == 0:
+              return "No running games\n"
+        else:
+            # Loops through each game and its corresponding players
+            for game_id, details in self.games.items():
+                  game_players = []
+                  for player_name, info in self.players.items():
+                        # Appends players to the list for each specific game ID
+                        if player_name['game ID'] == game_id:
+                              game_players.append(player_name)
+                  response = response + f"Game Id {game_id}\nDealer: {details['dealer']}\nPlayers: {', '.join(game_players)}\nHoles: {details['holes']}\n Status: {details['status']}\n"
+
         return response
 
     # This function deregisters a player given the parameters in the function call. The del command is used to remove the instance
