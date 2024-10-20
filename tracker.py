@@ -7,6 +7,7 @@
 
 import socket
 import threading
+import random
 
 # This prompts the user to save the IP address of the tracker
 SERVER = input("IP Address: ")
@@ -22,6 +23,9 @@ class Tracker:
     def __init__(self):
         self.players = {}
         self.games = {}
+
+        # This creates a way to manage multiple games at once by assigning an ID
+        self.game_id = 0
 
     # The start function allows the tracker to recieve messages from players. It binds the address and port entered at the 
     # beginning of the program.
@@ -65,6 +69,21 @@ class Tracker:
                 f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n\n"""
             )
         return response
+
+    def start_game(self, request):
+          dealer = request[1]
+          holes = request[2]
+          
+          # This sets the game ID for the game being started then increments it by 1 for the next game created to have a different ID
+          game_id = self.game_id
+          self.game_id = self.game_id + 1
+          
+          # Grabs all free players
+          for player_name, details in self.players.items():
+            if details['status'] == 'free':
+                self.players[player_name]['status'] = 'in game'
+                self.players[player_name]['game_id'] = game_id
+                
 
     # This function gathers the total games active and returns it. There is no game setup implementation so games will always 
     # return 0
