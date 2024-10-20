@@ -120,10 +120,22 @@ class Tracker:
           del self.games[game_id]
           return f"Game {game_id} has ended\n"
 
-    # This function gathers the total games active and returns it. There is no game setup implementation so games will always 
-    # return 0
+    # This function has been updated from the milestone to incorporate correct query game features
+    # If there are no current games running then it returns no games are running, otherwise it prints out each game's details
     def query_games(self):
-        response = f"Running Games: {len(self.games)}\n"
+        response = "Running Games:\n"
+        if len(self.games) == 0:
+              return "No running games\n"
+        else:
+            # Loops through each game and its corresponding players
+            for game_id, details in self.games.items():
+                  game_players = []
+                  for player_name, info in self.players.items():
+                        # Appends players to the list for each specific game ID
+                        if player_name['game ID'] == game_id:
+                              game_players.append(player_name)
+                  response = response + f"Game Id {game_id}\nDealer: {details['dealer']}\nPlayers: {', '.join(game_players)}\nHoles: {details['holes']}\n Status: {details['status']}\n"
+
         return response
 
     # This function deregisters a player given the parameters in the function call. The del command is used to remove the instance
