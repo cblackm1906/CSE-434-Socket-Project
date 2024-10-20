@@ -54,7 +54,7 @@ class Tracker:
               'player port': player_port, 
               'peer port': peer_port, 
               'status': 'free',
-              'game ID' : 'None'}
+              'game ID' : None}
         # This returns the message that the player was registered and the total players active
         return f"Player {player_name} registered\nTotal Players: {len(self.players)}\n"
 
@@ -103,6 +103,22 @@ class Tracker:
             else:
                   continue
           return response
+    
+    # This function ends a game based a request for a specific game ID to be ended
+    def end_game(self, request):
+          game_id = request[1]
+          
+          # For each player with the game ID that is being deleted, their status is set to free and their game ID is set to none again
+          for player_name, details in self.players.items():
+                if details['game ID'] == game_id:
+                    self.players[player_name]['status'] = 'free'
+                    self.players[player_name]['game ID'] = None
+                else:
+                      continue
+
+          # Deletes the game ID that is requested and sends the confirmation back to the player
+          del self.games[game_id]
+          return f"Game {game_id} has ended\n"
 
     # This function gathers the total games active and returns it. There is no game setup implementation so games will always 
     # return 0
