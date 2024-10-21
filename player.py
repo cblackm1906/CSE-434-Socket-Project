@@ -47,6 +47,20 @@ class Player:
         self.peer_port = peer_port
         self.game_id = None
         self.cards = []
+        self.start_listening()
+
+    # Adding this to ensure listening to other peers is consistent no matter what
+    # In use with peer_listen to fulfill objective of peer listening
+    # Uses multithreading to acheive goal as well
+    def start_listening(self):
+        listen_thread = threading.Thread(target=self.peer_listen)
+        listen_thread.start()
+
+    # Ensures peer listening is consistent
+    def peer_listen(self):
+        while True:
+            data, _ = peer_socket.recvfrom(2048)
+            print(f"Received: {data.decode(FORMAT)}")
 
     # This function registers a new player with the player name, port, and peer port that the user enters 
     # when first running program. The message of register information is sent to the send_msg function to then 
@@ -87,6 +101,7 @@ class Player:
             peer_port = lines[i + 3].split(":")[1].strip()
             players[player_name] = {'player ip': player_ip, 'player port': player_port, 'peer port': peer_port}
 
+        print(f"Players: {player_name}, IP: {player_ip}, Player Port: {player_port}, Peer Port: {peer_port}")
         # The players starting the game are dealt their cards using the deal_cards function
         self.deal_cards(players)
 
