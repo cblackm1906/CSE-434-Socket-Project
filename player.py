@@ -7,14 +7,22 @@
 
 import socket
 import threading
+import random
 
 # This prompts the user to save the IP address of the player
 SERVER = input("IP Address: ")
 # Used for uniform decoding of messages to utf-8
 FORMAT = 'utf-8'
 
+# The below lines setup the standard 52 card deck
+card_num = ['A', '2', '3', '4', '5', '6', '7','8', '9', '10', 'J', 'Q', 'K']
+card_type = ['Spade', 'Diamond', 'Club', 'Heart']
+deck = [(type, num) for type in card_type for num in card_num]
+
 # This uses the socket library to create a socket object using IPv4 and UDP structure
 player_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# This creates the peer communication socket
+peer_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Below commands prompt the user to enter info that will be used to register player later on
 player_name = input("Player Name: ")
@@ -24,6 +32,9 @@ tracker_addr = input("Tracker Address: ")
 tracker_port = int(input("Tracker Port: "))
 player_port = int(input("Player Port: "))
 peer_port = int(input("Peer Port: "))
+
+# Additional functionality added for peer to peer communication
+peer_socket.bind((SERVER, peer_port))
 
 # The class Player is used to create an instance of a player with the above features
 class Player:
