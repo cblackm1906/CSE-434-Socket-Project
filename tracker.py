@@ -96,7 +96,7 @@ class Tracker:
           # This grabs all players being put into the game (based on specific game ID) and their details, then sends back to player (dealer) that requested
           response = f"Players starting game {game_id}:\n"
           for player_name, details in self.players.items():
-            if details['status'] == 'in game' & details['game ID'] == game_id:
+            if details['status'] == 'in game' and details['game ID'] == game_id:
                 response += (
                 f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n Game ID: {details['game ID']}\n\n"""
                 )
@@ -106,7 +106,7 @@ class Tracker:
     
     # This function ends a game based a request for a specific game ID to be ended
     def end_game(self, request):
-          game_id = request[1]
+          game_id = request[2]
           
           # For each player with the game ID that is being deleted, their status is set to free and their game ID is set to none again
           for player_name, details in self.players.items():
