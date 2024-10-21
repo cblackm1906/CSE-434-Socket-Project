@@ -132,7 +132,7 @@ class Tracker:
                   game_players = []
                   for player_name, info in self.players.items():
                         # Appends players to the list for each specific game ID
-                        if player_name['game ID'] == game_id:
+                        if info['game ID'] == game_id:
                               game_players.append(player_name)
                   response = response + f"Game Id {game_id}\nDealer: {details['dealer']}\nPlayers: {', '.join(game_players)}\nHoles: {details['holes']}\n Status: {details['status']}\n"
         return response

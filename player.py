@@ -160,8 +160,8 @@ while connected:
             holes = input("Number of Holes: ")
             player.start_game(holes)
         elif ms == "4":
-            game_id = input("Game to end: ")
-            player.end_game()
+            game_id = int(input("Game to end: "))
+            player.end_game(game_id)
         elif ms == "5":
             player.query_games()
         elif ms == "6":
