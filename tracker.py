@@ -73,8 +73,8 @@ class Tracker:
 
     # Start game request handler that starts a game with all free players
     def start_game(self, request):
-          dealer = request[1]
-          holes = request[2]
+          dealer = request[2]
+          holes = request[3]
           
           # This sets the game ID for the game being started then increments it by 1 for the next game created to have a different ID
           game_id = self.game_id
@@ -94,9 +94,9 @@ class Tracker:
           }
 
           # This grabs all players being put into the game (based on specific game ID) and their details, then sends back to player (dealer) that requested
-          response = "Players starting game:\n"
+          response = f"Players starting game {game_id}:\n"
           for player_name, details in self.players.items():
-            if details['status'] == 'in game' & details['game ID'] == game_id:
+            if details['status'] == 'in game' and details['game ID'] == game_id:
                 response += (
                 f"""{player_name}\n{details['address']}\nPlayer Port: {details['player port']}\nPeer Port: {details['peer port']}\nStatus: {details['status']}\n Game ID: {details['game ID']}\n\n"""
                 )
@@ -106,7 +106,7 @@ class Tracker:
     
     # This function ends a game based a request for a specific game ID to be ended
     def end_game(self, request):
-          game_id = request[1]
+          game_id = request[2]
           
           # For each player with the game ID that is being deleted, their status is set to free and their game ID is set to none again
           for player_name, details in self.players.items():
@@ -135,7 +135,6 @@ class Tracker:
                         if player_name['game ID'] == game_id:
                               game_players.append(player_name)
                   response = response + f"Game Id {game_id}\nDealer: {details['dealer']}\nPlayers: {', '.join(game_players)}\nHoles: {details['holes']}\n Status: {details['status']}\n"
-
         return response
 
     # This function deregisters a player given the parameters in the function call. The del command is used to remove the instance
@@ -145,7 +144,7 @@ class Tracker:
         del self.players[player_name]
         return f"Player {player_name} deregistered\nTotal Players: {len(self.players)}\n"
     
-    # This function handles each individual player request messages. It can handle register, query players, query games, and deregister
+    # This function handles each individual player request messages. It can handle register, query players, query games, start game, end game, and deregister
     # The response when it gets the output back from the function called is then also sent back to the player that sent the request.
     def handle_client(self, conn, addr, tracker):
         # The below line decodes the message from the player and splits it by space into an array
@@ -159,6 +158,11 @@ class Tracker:
         if request[0] == 'query' and request[1] == 'games':
                     response = self.query_games()
                     print(response)
+        if request[0] == 'start' and request[1] == 'game':
+                    response = self.start_game(request)
+                    print(response)
+        if request[0] == 'end' and request[1] == 'game':
+                    response = self.end_game(request)
         if request[0] == 'deregister':
                     response = self.deregister_player(request)
                     print(response)
