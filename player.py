@@ -8,6 +8,7 @@
 import socket
 import threading
 import random
+import sys
 
 # This prompts the user to save the IP address of the player
 SERVER = input("IP Address: ")
@@ -54,6 +55,7 @@ class Player:
     # Uses multithreading to acheive goal as well
     def start_listening(self):
         listen_thread = threading.Thread(target=self.peer_listen)
+        listen_thread.daemon = True
         listen_thread.start()
 
     # Ensures peer listening is consistent
@@ -143,6 +145,9 @@ class Player:
     def deregister(self):
         message = f"deregister {self.player_name}"
         self.send_msg(message)
+        self.listening = False
+        peer_socket.close()
+        sys.exit(0)
 
     # This function sends the message provided by the above the functions to the tracker.
     def send_msg(self, message):
