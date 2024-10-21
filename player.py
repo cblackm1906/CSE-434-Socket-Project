@@ -80,11 +80,11 @@ class Player:
         # different identifiers
         # This for loop skips the first line since it is just the header and not player data
         # Reference used for split/strip technique https://www.youtube.com/watch?v=qGAY-YGJr2U
-        for i in range(2, len(lines), 7):
-            player_name = lines[i - 1].strip()
-            player_ip = lines[i].strip()
-            player_port = lines[i + 1].split(":")[1].strip()
-            peer_port = lines[i + 2].split(":")[1].strip()
+        for i in range(1, len(lines), 7):
+            player_name = lines[i].strip()
+            player_ip = lines[i+1].strip()
+            player_port = lines[i + 2].split(":")[1].strip()
+            peer_port = lines[i + 3].split(":")[1].strip()
             players[player_name] = {'player ip': player_ip, 'player port': player_port, 'peer port': peer_port}
 
         # The players starting the game are dealt their cards using the deal_cards function
