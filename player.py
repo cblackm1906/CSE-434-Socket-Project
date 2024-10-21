@@ -94,7 +94,7 @@ class Player:
     # This function calls the end_game function in the tracker file
     def end_game(self, game_id):
         message = f"end game {game_id}"
-        self.send_message_to_tracker(message)
+        self.send_msg(message)
         print(f"Game {game_id} has ended.")
 
     # When called in the start_game function, this function deals cards to those specific players starting a game
