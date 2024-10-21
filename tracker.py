@@ -106,7 +106,7 @@ class Tracker:
     
     # This function ends a game based a request for a specific game ID to be ended
     def end_game(self, request):
-          game_id = request[2]
+          game_id = int(request[2])
           
           # For each player with the game ID that is being deleted, their status is set to free and their game ID is set to none again
           for player_name, details in self.players.items():

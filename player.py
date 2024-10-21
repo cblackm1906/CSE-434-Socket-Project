@@ -47,6 +47,20 @@ class Player:
         self.peer_port = peer_port
         self.game_id = None
         self.cards = []
+        self.start_listening()
+
+    # Adding this to ensure listening to other peers is consistent no matter what
+    # In use with peer_listen to fulfill objective of peer listening
+    # Uses multithreading to acheive goal as well
+    def start_listening(self):
+        listen_thread = threading.Thread(target=self.peer_listen)
+        listen_thread.start()
+
+    # Ensures peer listening is consistent
+    def peer_listen(self):
+        while True:
+            data, _ = peer_socket.recvfrom(2048)
+            print(f"Received: {data.decode(FORMAT)}")
 
     # This function registers a new player with the player name, port, and peer port that the user enters 
     # when first running program. The message of register information is sent to the send_msg function to then 
@@ -80,13 +94,14 @@ class Player:
         # different identifiers
         # This for loop skips the first line since it is just the header and not player data
         # Reference used for split/strip technique https://www.youtube.com/watch?v=qGAY-YGJr2U
-        for i in range(2, len(lines), 7):
-            player_name = lines[i - 1].strip()
-            player_ip = lines[i].strip()
-            player_port = lines[i + 1].split(":")[1].strip()
-            peer_port = lines[i + 2].split(":")[1].strip()
+        for i in range(1, len(lines), 7):
+            player_name = lines[i].strip()
+            player_ip = lines[i+1].strip()
+            player_port = lines[i + 2].split(":")[1].strip()
+            peer_port = lines[i + 3].split(":")[1].strip()
             players[player_name] = {'player ip': player_ip, 'player port': player_port, 'peer port': peer_port}
 
+        print(f"Players: {player_name}, IP: {player_ip}, Player Port: {player_port}, Peer Port: {peer_port}")
         # The players starting the game are dealt their cards using the deal_cards function
         self.deal_cards(players)
 
@@ -94,7 +109,7 @@ class Player:
     # This function calls the end_game function in the tracker file
     def end_game(self, game_id):
         message = f"end game {game_id}"
-        self.send_message_to_tracker(message)
+        self.send_msg(message)
         print(f"Game {game_id} has ended.")
 
     # When called in the start_game function, this function deals cards to those specific players starting a game
