@@ -46,6 +46,8 @@ class Player:
         self.tracker_port = tracker_port
         self.player_port = player_port
         self.peer_port = peer_port
+        self.game_id = None
+        self.cards = []
 
     # This function registers a new player with the player name, port, and peer port that the user enters 
     # when first running program. The message of register information is sent to the send_msg function to then 
@@ -59,6 +61,18 @@ class Player:
     def query_players(self):
         message = "query players"
         self.send_msg(message)
+
+    def start_game(self, holes):
+        message = f"start game {self.player_name} {holes}"
+        
+        # Putting send msg function details right in this function to directly grab game ID to save
+        player_socket.sendto(message.encode(), (self.tracker_addr, self.tracker_port))
+        conn, _ = player_socket.recvfrom(2048)
+        #response = conn.decode(FORMAT)
+        print(f"{conn.decode(FORMAT)}")
+        
+        # Sets game ID for dealer, will see if this is needed as the start game function in tracker should handle this
+        # self.game_id= response.splitlines()[3]
 
     # This function querys all games started. The message query games is sent to the send_msg function to 
     # then prompt the tracker to display the total games running at the moment. Game setup is not currently implemented

@@ -73,8 +73,8 @@ class Tracker:
 
     # Start game request handler that starts a game with all free players
     def start_game(self, request):
-          dealer = request[1]
-          holes = request[2]
+          dealer = request[2]
+          holes = request[3]
           
           # This sets the game ID for the game being started then increments it by 1 for the next game created to have a different ID
           game_id = self.game_id
@@ -94,7 +94,7 @@ class Tracker:
           }
 
           # This grabs all players being put into the game (based on specific game ID) and their details, then sends back to player (dealer) that requested
-          response = "Players starting game:\n"
+          response = f"Players starting game {game_id}:\n"
           for player_name, details in self.players.items():
             if details['status'] == 'in game' & details['game ID'] == game_id:
                 response += (
